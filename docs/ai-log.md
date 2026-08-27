@@ -49,3 +49,8 @@
 **Context:** the build prompt explicitly ruled out getSearch(id) ("Don't add it"); the user asked for it — history rows showed only the score, but resultJson already stores every full Recommendation.
 **Decision / Problem:** added getSearch() in lib/db.ts, GET /api/history/[id], and made history rows buttons: clicking restores that search's recommendation card and chart from the stored snapshot and refills the form with the original inputs. The snapshot is shown as saved — it is not re-fetched or re-scored.
 **Outcome:** stored data is now visibly useful in the UI, which also demonstrates why resultJson was persisted in the first place.
+
+## [14:50] AI bug: the first hydration guard caused the warning it was meant to prevent
+**Context:** "no response on first search" was a pre-hydration native form submit (measured: the API answers a cold first request in ~3.4s), so the submit button is disabled until React hydrates.
+**Decision / Problem:** the first version used useState + useEffect, which — combined with stale dev bundles across server restarts — surfaced React hydration-mismatch warnings on the button. Replaced with useSyncExternalStore (server snapshot false, client snapshot true), React's sanctioned API for values that legitimately differ between server and client.
+**Outcome:** clean console verified in a real browser; the too-early click now does nothing instead of silently reloading the page.

@@ -46,13 +46,14 @@ app/
 ├── globals.css                # Tailwind import + design tokens from docs/design.md
 └── api/
     ├── recommend/route.ts     # POST: validate → run pipeline → JSON (or mapped error)
-    └── history/route.ts       # GET: recent searches, ?limit= clamped 1–50
+    ├── history/route.ts       # GET: recent searches, ?limit= clamped 1–50
+    └── history/[id]/route.ts  # GET: one stored search — the full saved recommendation + inputs
 components/
 ├── Dashboard.tsx              # client: form/result/status state machine, page sections
 ├── SearchForm.tsx             # two labelled inputs, submit pill, example chips
 ├── RecommendationCard.tsx     # chips, resolved location, window, score, metric tiles, breakdown
 ├── HourlyScores.tsx           # pure-CSS bar chart, blue outline on the recommended window
-├── RecentSearches.tsx         # history rows with relative time and mean score
+├── RecentSearches.tsx         # clickable history rows — reopen any stored result
 ├── StatusMessage.tsx          # error / empty / no-window box
 └── ui.tsx                     # tiny primitives: SectionLabel, Card, Pill, Tag
 lib/
@@ -107,7 +108,7 @@ One Prisma model, `Search` — every request writes exactly one row, including "
 - `locationInput` / `requestText` — exactly what the user typed, for reproducing a search.
 - `resolvedName`, `latitude`, `longitude`, `timezone` — what geocoding decided, so a row is interpretable without re-geocoding.
 - `activityLabel`, `parserUsed` — what the parser understood and which parser produced it.
-- `intentJson`, `resultJson` — the full resolved `Intent` and `Recommendation` as JSON strings; Prisma's SQLite connector has no `Json` column type, and these are read-mostly blobs kept for auditability and future re-rendering.
+- `intentJson`, `resultJson` — the full resolved `Intent` and `Recommendation` as JSON strings; Prisma's SQLite connector has no `Json` column type. `resultJson` is what makes history rows clickable: reopening a search renders the stored snapshot without re-fetching or re-scoring.
 - `bestWindowStart`, `bestWindowEnd`, `meanScore` — **denormalized** copies of the three values the history list displays, so listing recent searches never parses JSON.
 
 ## AI tools used
@@ -119,7 +120,7 @@ One Prisma model, `Search` — every request writes exactly one row, including "
 
 | Code | HTTP | Raised in | UI shows |
 |---|---|---|---|
-| `INVALID_INPUT` | 400 | route: Zod validation of the body, or a malformed JSON body | the first Zod issue message |
+| `INVALID_INPUT` | 400/404 | route: Zod validation of the body, a malformed JSON body, or an unknown history id | the first Zod issue message |
 | `LOCATION_NOT_FOUND` | 404 | `openMeteo.geocode()` when geocoding returns no results | We couldn't find "…". Try adding a country. |
 | `WEATHER_UNAVAILABLE` | 502 | `openMeteo.ts` on network error, timeout, non-2xx, or unexpected response shape | The weather service didn't respond. Please try again in a moment. |
 | `INTERNAL` | 500 | `toErrorResponse()` catch-all (logged server-side) | Something unexpected happened. Please try again. |

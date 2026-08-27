@@ -87,6 +87,14 @@ export function parseIntent(text: string): ParsedIntent {
   });
 }
 
+// Phase 9 tries the LLM first when credentials exist; until then this is
+// a thin wrapper so the pipeline already has its final shape.
+export async function parseIntentWithFallback(
+  text: string,
+): Promise<{ parsed: ParsedIntent; parserUsed: "keyword" | "llm" }> {
+  return { parsed: parseIntent(text), parserUsed: "keyword" };
+}
+
 function matchFirst<T>(text: string, table: [string[], T][]): T | undefined {
   for (const [keywords, value] of table) {
     if (keywords.some((k) => hasWord(text, k))) return value;

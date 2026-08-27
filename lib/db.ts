@@ -27,6 +27,20 @@ export async function saveSearch(input: RecommendRequest, rec: Recommendation): 
   return row.id;
 }
 
+// Re-opens a stored search: the full Recommendation snapshot plus the inputs
+// that produced it, so the UI can restore both the result and the form.
+export async function getSearch(
+  id: string,
+): Promise<{ locationInput: string; requestText: string; recommendation: Recommendation } | null> {
+  const row = await prisma.search.findUnique({ where: { id } });
+  if (!row) return null;
+  return {
+    locationInput: row.locationInput,
+    requestText: row.requestText,
+    recommendation: JSON.parse(row.resultJson) as Recommendation,
+  };
+}
+
 export async function listRecentSearches(limit = 10): Promise<SearchSummary[]> {
   const rows = await prisma.search.findMany({ orderBy: { createdAt: "desc" }, take: limit });
   return rows.map((r) => ({

@@ -44,3 +44,8 @@
 **Context:** the build prompt specified native title-attribute tooltips only ("no custom popover"); in practice they need a ~1s motionless hover and the user reported them as not showing.
 **Decision / Problem:** the user overrode the prompt: bars now get an instant CSS-only tooltip (white pill, hairline border, 12px text, no shadow — inside the design system) shown via group-hover; title and aria-label stay for accessibility.
 **Outcome:** hover info is immediately visible; no JS, no library, design rules intact.
+
+## [14:45] User decision: history rows re-open their stored result
+**Context:** the build prompt explicitly ruled out getSearch(id) ("Don't add it"); the user asked for it — history rows showed only the score, but resultJson already stores every full Recommendation.
+**Decision / Problem:** added getSearch() in lib/db.ts, GET /api/history/[id], and made history rows buttons: clicking restores that search's recommendation card and chart from the stored snapshot and refills the form with the original inputs. The snapshot is shown as saved — it is not re-fetched or re-scored.
+**Outcome:** stored data is now visibly useful in the UI, which also demonstrates why resultJson was persisted in the first place.

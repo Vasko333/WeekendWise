@@ -63,6 +63,22 @@ export default function Dashboard({ initialHistory }: { initialHistory: SearchSu
     }
   }
 
+  async function openSearch(id: string) {
+    setStatus("loading");
+    try {
+      const res = await fetch(`/api/history/${id}`);
+      if (!res.ok) throw new Error(`status ${res.status}`);
+      const data = await res.json();
+      setLocation(data.locationInput);
+      setRequest(data.requestText);
+      setResult(data.recommendation);
+      setStatus("success");
+    } catch {
+      setErrorMessage("Couldn't load that search. Please try again.");
+      setStatus("error");
+    }
+  }
+
   async function refreshHistory() {
     try {
       const res = await fetch("/api/history");
@@ -118,7 +134,7 @@ export default function Dashboard({ initialHistory }: { initialHistory: SearchSu
         <section>
           <SectionLabel label="History" title="Recent searches" />
           <div className="mt-22">
-            <RecentSearches searches={history} />
+            <RecentSearches searches={history} onSelect={openSearch} />
           </div>
         </section>
       </main>

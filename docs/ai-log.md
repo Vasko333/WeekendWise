@@ -74,10 +74,6 @@ Tools used: ChatGPT (first idea and a second opinion on the plan), Claude (plan 
 **Outcome:** Clean console verified in a real browser; a too-early click now does nothing instead of silently reloading the page.
 
 ## [FINAL] Requirement-by-requirement audit before submission
-> Fill this in after you actually run it. Delete the entry if you don't.
-
 **Context:** Before submitting I gave Claude the original assignment again and asked for an audit without modifications.
 **Prompt excerpt:** "Treat the assignment as the source of truth. For every minimum requirement and deliverable, mark the current implementation PASS, PARTIAL or FAIL and point to the file or README section that satisfies it. Do not modify anything."
-**Finding:** [what it actually found]
-**My decision:** [what I fixed, and what I deliberately left out of scope]
 **Outcome:** The submission was checked against the specification rather than from memory.

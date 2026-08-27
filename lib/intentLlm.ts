@@ -17,7 +17,7 @@ function systemPrompt(): string {
 Respond with a single JSON object, no prose, no code fences, with exactly these fields:
 - "activity": one of ${ActivityKeySchema.options.join(", ")} ("generic" when unsure)
 - "activityLabel": short display label for the activity, e.g. "Running"
-- "dayToken": one of ${DayTokenSchema.options.join(", ")} ("week" when unsure)
+- "dayToken": one of ${DayTokenSchema.options.join(", ")} — "any" is NOT a valid dayToken; use "week" when no day is mentioned
 - "period": one of ${PeriodSchema.options.join(", ")} ("any" when unsure)
 - "temp": { "idealMin": number, "idealMax": number } in degrees C
 - "maxPrecipProb": number 0-100 (40 unless the text says otherwise; 20 when rain is unwanted, 80 when rain is fine)
@@ -54,5 +54,17 @@ export async function parseIntentWithLlm(text: string): Promise<ParsedIntent> {
   if (!res.ok) throw new Error(`LLM endpoint returned status ${res.status}`);
   const completion = CompletionSchema.parse(await res.json());
   const content = completion.choices[0].message.content.replace(/```(?:json)?/g, "").trim();
-  return ParsedIntentSchema.parse(JSON.parse(content));
+  return ParsedIntentSchema.parse(withEnumDefaults(JSON.parse(content)));
+}
+
+// Models sometimes bleed one enum into another (observed: dayToken "any").
+// Map invalid enum values to their documented defaults; everything else stays
+// strictly validated by ParsedIntentSchema, which remains the gate.
+function withEnumDefaults(raw: unknown): unknown {
+  if (typeof raw !== "object" || raw === null) return raw;
+  const obj = { ...(raw as Record<string, unknown>) };
+  if (!ActivityKeySchema.safeParse(obj.activity).success) obj.activity = "generic";
+  if (!DayTokenSchema.safeParse(obj.dayToken).success) obj.dayToken = "week";
+  if (!PeriodSchema.safeParse(obj.period).success) obj.period = "any";
+  return obj;
 }

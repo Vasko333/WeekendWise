@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { Pill } from "@/components/ui";
+
+const emptySubscribe = () => () => {};
 
 const EXAMPLES = [
   { location: "Skopje", request: "running tomorrow evening, cool, unlikely to rain" },
@@ -18,6 +20,11 @@ type Props = {
 
 export function SearchForm({ location, request, loading, onLocationChange, onRequestChange, onSubmit }: Props) {
   const [attempted, setAttempted] = useState(false);
+  // Until React hydrates, a click on submit would trigger the browser's native
+  // form submission (a page reload that looks like "nothing happened"), so the
+  // button stays disabled until then. useSyncExternalStore is React's sanctioned
+  // way to render a value that legitimately differs between server and client.
+  const hydrated = useSyncExternalStore(emptySubscribe, () => true, () => false);
   const missingLocation = location.trim() === "";
   const missingRequest = request.trim() === "";
 
@@ -56,7 +63,7 @@ export function SearchForm({ location, request, loading, onLocationChange, onReq
           <p className="mt-4 text-[12px] text-steel-gray">Please describe what you want to do.</p>
         )}
       </div>
-      <Pill disabled={loading}>{loading ? "Scoring hours…" : "Find the best window"}</Pill>
+      <Pill disabled={loading || !hydrated}>{loading ? "Scoring hours…" : "Find the best window"}</Pill>
       <div className="flex flex-wrap gap-6">
         {EXAMPLES.map((ex) => (
           <button

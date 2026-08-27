@@ -36,7 +36,10 @@ export function HourlyScores({ candidates, bestWindow }: { candidates: ScoredHou
               <p className="w-50 shrink-0 pb-22 text-[12px] text-steel-gray">{dayLabel(date)}</p>
               <div className="flex flex-1 items-end gap-6">
                 {hours.map((h, i) => (
-                  <div key={h.time} className="flex min-w-[6px] flex-1 flex-col items-stretch gap-4">
+                  <div key={h.time} className="group relative flex min-w-[6px] flex-1 flex-col items-stretch gap-4">
+                    <span className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-4 hidden -translate-x-1/2 whitespace-nowrap rounded-full-3 border-[0.5px] border-black/6 bg-pure-white px-10 py-0.5 text-[12px] text-off-black group-hover:block">
+                      {barTitle(h)}
+                    </span>
                     <div
                       role="img"
                       aria-label={barTitle(h)}

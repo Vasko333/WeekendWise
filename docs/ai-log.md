@@ -34,3 +34,13 @@
 **Context:** Phase 9 got the go: parseIntentWithLlm posts to an OpenAI-compatible chat/completions endpoint and is validated by the same ParsedIntentSchema as the keyword parser.
 **Decision / Problem:** the LLM is never load-bearing — no key means it is not even attempted, and any thrown error (401, timeout, bad JSON, schema mismatch) logs one console.warn and falls back to keywords; verified live with a valid key (parsed by: llm), a wrong key (401 → keyword, request still 200), and no key. Ran both parsers on 3 sentences: on "morning jog on Saturday if it isn't too windy" the keyword parser matches "windy" and *raises* maxWind to 60 while the LLM keeps 30 — the LLM understood the negation; on "take the dog out after work tomorrow" the LLM inferred walking in the evening where keywords give generic/any; on the demo sentence they agree except the LLM keeps the running default temp band {8,18} vs the keyword "cool" mapping {10,18}.
 **Outcome:** parsed by: llm in the UI with graceful degradation; the deterministic parser remains the guaranteed path.
+
+## [14:25] API surprise: the LLM bled one enum into another
+**Context:** "go on a coffee with friends" made gpt-4o-mini answer dayToken: "any" — a valid *period* value but not a valid *dayToken* — so Zod rejected it and the app fell back to keywords (correctly, but needlessly).
+**Decision / Problem:** two-layer fix: the system prompt now says explicitly that "any" is not a valid dayToken, and a small withEnumDefaults() step maps invalid enum values to their documented defaults (generic/week/any) before validation. Numbers and booleans stay strictly Zod-validated, so the schema remains the gate.
+**Outcome:** the same sentence now parses via the LLM; the fallback still catches everything else.
+
+## [14:40] User decision: real hover tooltips on the chart bars
+**Context:** the build prompt specified native title-attribute tooltips only ("no custom popover"); in practice they need a ~1s motionless hover and the user reported them as not showing.
+**Decision / Problem:** the user overrode the prompt: bars now get an instant CSS-only tooltip (white pill, hairline border, 12px text, no shadow — inside the design system) shown via group-hover; title and aria-label stay for accessibility.
+**Outcome:** hover info is immediately visible; no JS, no library, design rules intact.

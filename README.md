@@ -22,7 +22,7 @@ npm test           # 16 unit tests (scorer + parser)
 npm run typecheck  # tsc --noEmit
 ```
 
-Parsing is fully deterministic (keyword tables). An LLM-based parser was scoped as an optional extra and deliberately **not** implemented — see the "Demoted the LLM to an optional parser" entry in [docs/ai-log.md](docs/ai-log.md). The commented `LLM_*` variables in `.env.example` are reserved for it.
+Parsing is deterministic (keyword tables) by default. An **optional LLM parser** can be enabled by setting the `LLM_*` variables in `.env` (any OpenAI-compatible endpoint — OpenAI, Groq, OpenRouter; see `.env.example`). It is validated through the same Zod schema, and on *any* failure — missing key, bad key, timeout, malformed output — the app silently falls back to the keyword parser and keeps working; the result card shows `parsed by: keyword|llm` either way. See the "Demoted the LLM to an optional parser" entry in [docs/ai-log.md](docs/ai-log.md).
 
 ## Architecture
 
@@ -63,7 +63,7 @@ lib/
 ├── score.ts                   # deterministic scoring + best-window search (pure functions)
 ├── pipeline.ts                # runRecommendation(): the whole flow in six lines
 ├── db.ts                      # prisma singleton, saveSearch(), listRecentSearches()
-└── intentLlm.ts               # empty placeholder reserved for the optional LLM parser
+└── intentLlm.ts               # optional LLM parser (OpenAI-compatible endpoint, Zod-validated, falls back)
 tests/
 ├── score.test.ts              # 11 scorer tests
 ├── intent.test.ts             # 5 parser tests (incl. the Auckland timezone proof)

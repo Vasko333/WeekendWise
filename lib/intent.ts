@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { parseIntentWithLlm } from "@/lib/intentLlm";
 import {
   ActivityKey,
   DayTokenSchema,
@@ -87,11 +88,18 @@ export function parseIntent(text: string): ParsedIntent {
   });
 }
 
-// Phase 9 tries the LLM first when credentials exist; until then this is
-// a thin wrapper so the pipeline already has its final shape.
+// The LLM parser is optional: it runs only when credentials exist, and any
+// failure (network, timeout, bad JSON, schema) falls back to keywords.
 export async function parseIntentWithFallback(
   text: string,
 ): Promise<{ parsed: ParsedIntent; parserUsed: "keyword" | "llm" }> {
+  if (process.env.LLM_API_KEY) {
+    try {
+      return { parsed: await parseIntentWithLlm(text), parserUsed: "llm" };
+    } catch (err) {
+      console.warn("LLM parser failed, falling back to keywords:", err);
+    }
+  }
   return { parsed: parseIntent(text), parserUsed: "keyword" };
 }
 

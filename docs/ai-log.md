@@ -29,3 +29,8 @@
 **Context:** Phase 8's gate includes browser-only checks (blue window outline, error box, blocked empty submit, 375px overflow).
 **Decision / Problem:** drove headless Edge with a throwaway playwright-core script kept outside the repo, screenshotting idle/result/error/mobile states and counting .best-window-bar elements.
 **Outcome:** all four browser checks confirmed with screenshots; the only console entry is the browser's own 404 network log when the API correctly returns LOCATION_NOT_FOUND.
+
+## [14:20] LLM parser enabled (OpenRouter) — fallback design and where it disagrees with keywords
+**Context:** Phase 9 got the go: parseIntentWithLlm posts to an OpenAI-compatible chat/completions endpoint and is validated by the same ParsedIntentSchema as the keyword parser.
+**Decision / Problem:** the LLM is never load-bearing — no key means it is not even attempted, and any thrown error (401, timeout, bad JSON, schema mismatch) logs one console.warn and falls back to keywords; verified live with a valid key (parsed by: llm), a wrong key (401 → keyword, request still 200), and no key. Ran both parsers on 3 sentences: on "morning jog on Saturday if it isn't too windy" the keyword parser matches "windy" and *raises* maxWind to 60 while the LLM keeps 30 — the LLM understood the negation; on "take the dog out after work tomorrow" the LLM inferred walking in the evening where keywords give generic/any; on the demo sentence they agree except the LLM keeps the running default temp band {8,18} vs the keyword "cool" mapping {10,18}.
+**Outcome:** parsed by: llm in the UI with graceful degradation; the deterministic parser remains the guaranteed path.

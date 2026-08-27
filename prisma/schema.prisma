@@ -1,0 +1,10 @@
+// The Search model is added in Phase 6. The generator/datasource header exists
+// from Phase 1 so the postinstall "prisma generate" never breaks npm install.
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}

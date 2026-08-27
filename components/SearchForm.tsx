@@ -64,7 +64,7 @@ export function SearchForm({ location, request, loading, onLocationChange, onReq
         )}
       </div>
       <Pill disabled={loading || !hydrated}>{loading ? "Scoring hours…" : "Find the best window"}</Pill>
-      <div className="flex flex-wrap gap-6">
+      <div className="flex flex-wrap justify-center gap-10">
         {EXAMPLES.map((ex) => (
           <button
             key={ex.location}
@@ -73,7 +73,7 @@ export function SearchForm({ location, request, loading, onLocationChange, onReq
               onLocationChange(ex.location);
               onRequestChange(ex.request);
             }}
-            className="rounded-full-3 border-[0.5px] border-signal-blue px-10 py-0.5 text-left text-[12px] text-signal-blue transition-opacity duration-150 hover:opacity-75"
+            className="cursor-pointer rounded-full-3 border-[0.5px] border-signal-blue px-22 py-6 text-[13px] text-signal-blue transition-opacity duration-150 hover:opacity-75"
           >
             {ex.location} · {ex.request}
           </button>

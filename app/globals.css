@@ -1,1 +1,75 @@
 @import "tailwindcss";
+
+@theme {
+  /* Colors */
+  --color-off-black: #0f1012;
+  --color-pure-black: #020201;
+  --color-off-white: #f2f2f4;
+  --color-pure-white: #fdfdfd;
+  --color-steel-gray: #5e5e5e;
+  --color-ash-gray: #8f8f8f;
+  --color-signal-blue: #0071e3;
+
+  /* Typography */
+  --font-pp-neue-montreal: 'PP Neue Montreal', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  /* Typography — Scale */
+  --text-caption: 10px;
+  --leading-caption: 12;
+  --tracking-caption: -0.2px;
+  --text-body: 16px;
+  --leading-body: 19.2;
+  --tracking-body: -0.32px;
+  --text-subheading: 18px;
+  --leading-subheading: 21.6;
+  --tracking-subheading: -0.36px;
+  --text-heading: 27px;
+  --leading-heading: 32.4;
+  --tracking-heading: -0.54px;
+
+  /* Spacing */
+  --spacing-4: 4px;
+  --spacing-6: 6px;
+  --spacing-10: 10px;
+  --spacing-11: 11px;
+  --spacing-22: 22px;
+  --spacing-30: 30px;
+  --spacing-34: 34px;
+  --spacing-35: 35px;
+  --spacing-50: 50px;
+  --spacing-69: 69px;
+  --spacing-94: 94px;
+  --spacing-113: 113px;
+  --spacing-130: 130px;
+  --spacing-144: 144px;
+  --spacing-220: 220px;
+
+  /* Border Radius */
+  --radius-sm: 1.8px;
+  --radius-lg: 10px;
+  --radius-3xl: 26px;
+  --radius-full: 54px;
+  --radius-full-2: 63px;
+  --radius-full-3: 9999px;
+}
+
+body {
+  background: var(--color-off-white);
+  color: var(--color-off-black);
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 350;
+  letter-spacing: -0.02em;
+  font-feature-settings: "ss01", "cv11";
+  line-height: 1.2;
+}
+
+:focus-visible {
+  outline: 1px solid var(--color-signal-blue);
+  outline-offset: 2px;
+}
+
+/* Bars inside the recommended window get the blue hairline highlight. */
+.best-window-bar {
+  outline: 1px solid var(--color-signal-blue);
+  outline-offset: 1px;
+}

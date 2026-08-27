@@ -1,5 +1,10 @@
 # AI Development Log
 
+## [13:15] The build ran from one phased master prompt
+**Context:** the entire app was built by Claude Code from a single structured prompt written before any code existed.
+**Decision / Problem:** the prompt fixed the architecture up front (Next.js route handlers only, Prisma 6 + SQLite, deterministic scorer as the core, keyword parser primary), defined the exact domain contract for lib/types.ts, and imposed a per-phase lifecycle: code → definition-of-done check → typecheck/tests → commit. Gates ran before tests on purpose — tests prove the code does what was asked, the DoD proves the right thing was asked.
+**Outcome:** every commit on main is a working, demoable state; the AI's freedom was spent on implementation detail, not architecture.
+
 ## [13:20] Dropped FastAPI in favor of Next.js route handlers
 **Context:** initial plan was Next + FastAPI.
 **Decision / Problem:** one runtime, one package manager, one deploy story; the backend is two endpoints, which does not justify a second server.
